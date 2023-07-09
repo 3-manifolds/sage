@@ -29,7 +29,7 @@ with warnings.catch_warnings():
     from ipykernel.ipkernel import IPythonKernel
 
 from ipykernel.zmqshell import ZMQInteractiveShell
-from traitlets import List, Type
+from traitlets import Type
 
 from sage.env import SAGE_VERSION
 from sage.repl.interpreter import SageNotebookInteractiveShell
