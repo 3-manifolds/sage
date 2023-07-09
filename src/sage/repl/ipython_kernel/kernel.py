@@ -29,7 +29,7 @@ with warnings.catch_warnings():
     from ipykernel.ipkernel import IPythonKernel
 
 from ipykernel.zmqshell import ZMQInteractiveShell
-from traitlets import Type
+from traitlets import List, Type
 
 from sage.env import SAGE_VERSION
 from sage.repl.interpreter import SageNotebookInteractiveShell
@@ -100,70 +100,34 @@ class SageKernel(IPythonKernel):
             sage: sk = SageKernel.__new__(SageKernel)
             sage: sk.help_links
             [{'text': 'Sage Documentation',
-              'url': 'https://doc.sagemath.org/html/en/index.html'},
+              'url': 'http://127.0.0.1:XXXXX'},
              ...]
         """
-        # DEPRECATED: The URLs in the form 'kernelspecs/...' were used for
-        # classical Jupyter notebooks. For instance,
-        #
-        #  'kernelspecs/sagemath/doc/html/en/index.html'
-        #
-        # is constructed by kernel_url('doc/html/en/index.html'), but these
-        # URLs of local files don't work for JupyterLab. Hence all URLs here
-        # have been replaced with URLs of online documents.
-
-        from sage.repl.ipython_kernel.install import SageKernelSpec
-        identifier = SageKernelSpec.identifier()
-
-        def kernel_url(x):
-            # URLs starting with 'kernelspecs' are prepended by the
-            # browser with the appropriate path
-            return 'kernelspecs/{0}/{1}'.format(identifier, x)
-
+        try:
+            doc_url = 'http://%s:%s'%self.docserver.address()
+        except:
+            doc_url = 'https://doc.sagemath.org/html/en'
+        # This works with Classic Jupyter and Jupyter Lab.  Not with V7.
         return [
             {
                 'text': 'Sage Documentation',
-                'url': "https://doc.sagemath.org/html/en/index.html",
+                'url': doc_url,
             },
             {
-                'text': 'A Tour of Sage',
-                'url': "https://doc.sagemath.org/html/en/a_tour_of_sage/index.html",
+                'text': 'Sage Reference',
+                'url': doc_url + '/reference/',
             },
             {
-                'text': 'Tutorial',
-                'url': "https://doc.sagemath.org/html/en/tutorial/index.html",
+                'text': 'Sage Tutorial',
+                'url': doc_url + '/tutorial/',
             },
             {
-                'text': 'Thematic Tutorials',
-                'url': "https://doc.sagemath.org/html/en/thematic_tutorials/index.html",
+                'text': 'Python',
+                'url': 'http://docs.python.org/%i.%i' % sys.version_info[:2],
             },
             {
-                'text': 'PREP Tutorials',
-                'url': "https://doc.sagemath.org/html/en/prep/index.html",
-            },
-            {
-                'text': 'Constructions',
-                'url': "https://doc.sagemath.org/html/en/constructions/index.html",
-            },
-            {
-                'text': 'FAQ',
-                'url': "https://doc.sagemath.org/html/en/faq/index.html",
-            },
-            {
-                'text': 'Reference',
-                'url': "https://doc.sagemath.org/html/en/reference/index.html",
-            },
-            {
-                'text': "Developer's Guide",
-                'url': "https://doc.sagemath.org/html/en/developer/index.html",
-            },
-            {
-                'text': "Python",
-                'url': "http://docs.python.org/%i.%i" % sys.version_info[:2],
-            },
-            {
-                'text': "IPython",
-                'url': "http://ipython.org/documentation.html",
+                'text': 'IPython',
+                'url': 'http://ipython.org/documentation.html',
             },
             {
                 'text': 'Singular',
@@ -174,24 +138,24 @@ class SageKernel(IPythonKernel):
                 'url': 'http://gap-system.org/Manuals/doc/ref/chap0.html',
             },
             {
-                'text': "NumPy",
-                'url': "http://docs.scipy.org/doc/numpy/reference/",
+                'text': 'NumPy',
+                'url': 'http://docs.scipy.org/doc/numpy/reference/',
             },
             {
-                'text': "SciPy",
-                'url': "http://docs.scipy.org/doc/scipy/reference/",
+                'text': 'SciPy',
+                'url': 'http://docs.scipy.org/doc/scipy/reference/',
             },
             {
-                'text': "SymPy",
+                'text': 'SymPy',
                 'url': 'http://docs.sympy.org/latest/index.html',
             },
             {
-                'text': "Matplotlib",
-                'url': "https://matplotlib.org/contents.html",
+                'text': 'Matplotlib',
+                'url': 'https://matplotlib.org/contents.html',
             },
             {
-                'text': "Markdown",
-                'url': "http://help.github.com/articles/github-flavored-markdown",
+                'text': 'Markdown',
+                'url': 'http://help.github.com/articles/github-flavored-markdown',
             },
         ]
 

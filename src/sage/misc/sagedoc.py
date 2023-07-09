@@ -33,6 +33,7 @@ Check that sphinx is not imported at Sage start-up::
 """
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
+#       Copyright (C) 2023 Marc Culler (modifications for Sage_macOS)
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -49,6 +50,15 @@ from sage.misc.viewer import browser
 from sage.misc import sageinspect
 import sage.version
 from sage.env import SAGE_DOC, SAGE_SRC
+
+app_contents = os.path.abspath(os.path.join(os.environ['SAGE_ROOT'],
+    '..', '..', '..', '..'))
+site_root = os.path.join(app_contents, 'Resources', 'documentation')
+try:
+    from cocoserver import StaticServer
+    doc_server = StaticServer(site_root)
+except ImportError:
+    doc_server = None
 
 # The detex function does two kinds of substitutions: math, which
 # should only be done on the command line -- in the notebook, these
@@ -117,7 +127,6 @@ nonmath_substitutes = [
     ('end{verbatim}', ''),
     ('note{', 'NOTE: '),
 ]
-
 
 def _rmcmd(s, cmd, left='', right=''):
     """
@@ -919,9 +928,8 @@ def _search_src_or_doc(what, string, extra1='', extra2='', extra3='',
     results to stdout::
 
         sage: from sage.misc.sagedoc import _search_src_or_doc
-        sage: _search_src_or_doc('src',                        # long time
-        ....:                    r'def _search_src_or_doc\(',
-        ....:                    interact=True)
+        sage: _search_src_or_doc('src', r'def _search_src_or_doc\(',
+        ....:                    interact=True)  # long time
         misc/sagedoc.py:...:        def _search_src_or_doc(what, string, extra1='', extra2='', extra3='',
     """
 
@@ -1614,14 +1622,16 @@ class _sage_doc:
         """
         url = self._base_url + os.path.join(name, "index.html")
         path = os.path.join(self._base_path, name, "index.html")
-        if not os.path.exists(path):
-            raise OSError("""The document '{0}' does not exist.  Please build it
-with 'sage -docbuild {0} html' and try again.""".format(name))
 
         if testing:
             return (url, path)
 
-        os.system(browser() + " " + path)
+        if doc_server:
+           doc_server.visit(name) 
+        elif os.path.exists(path):
+            os.system(browser() + " " + path)
+        else:
+            os.system(browser() + " " + "https://doc.sagemath.org/html/en/%s/index.html"%name)
 
     def tutorial(self):
         """
