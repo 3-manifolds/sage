@@ -1,0 +1,42 @@
+*** src/pGroupCohomology-3.3.3/setup.py	Thu Nov 16 09:22:17 2023
+--- src_new/pGroupCohomology-3.3.3/setup.py	Thu Nov 16 09:49:52 2023
+***************
+*** 18,32 ****
+  #    along with p_group_cohomoloy.  If not, see <http://www.gnu.org/licenses/>.
+  #*****************************************************************************
+  
+  from setuptools import setup, find_packages
+  from setuptools.extension import Extension
+  from setuptools.command.build_ext import build_ext
+- from Cython.Build import cythonize
+  from sys import version_info
+  from sage.all import srange, singular
+  from sage.rings.integer import Integer
+  
+! import os
+  
+  # determine that we have a sufficiently new SageMath version to avoid
+  # all kinds of hastle with all the backwards incompatible changes in Sage
+--- 18,39 ----
+  #    along with p_group_cohomoloy.  If not, see <http://www.gnu.org/licenses/>.
+  #*****************************************************************************
+  
++ import os
+  from setuptools import setup, find_packages
+  from setuptools.extension import Extension
+  from setuptools.command.build_ext import build_ext
+  from sys import version_info
+  from sage.all import srange, singular
+  from sage.rings.integer import Integer
+  
+! from Cython.Build import cythonize as cython_cythonize
+! try:
+!     from sage.misc.package_dir import cython_namespace_package_support
+!     def cythonize(*args, **kwargs):
+!         with cython_namespace_package_support():
+!             return cython_cythonize(*args, **kwargs)
+! except ImportError:
+!     cythonize = cython_cythonize
+  
+  # determine that we have a sufficiently new SageMath version to avoid
+  # all kinds of hastle with all the backwards incompatible changes in Sage
