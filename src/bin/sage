@@ -93,7 +93,8 @@ runpath_sh=$VERSION_DIR/local/var/lib/sage/runpath.sh
 if [ -x "$runpath_sh" ]; then
     . "$runpath_sh"
 else
-    echo could not find $VERSION_DIR/local/var/lib/sage/runpath.sh
+    echo >&2 "Could not find runpath.sh."
+    echo >&2 "The SageMath symlink is probably misconfigured."    
 fi
 
 # Check that the installation specific symlink points to this sage
