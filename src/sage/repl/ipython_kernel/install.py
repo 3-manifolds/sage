@@ -89,7 +89,7 @@ class SageKernelSpec():
             sage: SageKernelSpec.identifier()
             'sagemath'
         """
-        return 'sagemath'
+        return 'SageMath-{0}'.format(SAGE_VERSION)
 
     def symlink(self, src, dst):
         """
